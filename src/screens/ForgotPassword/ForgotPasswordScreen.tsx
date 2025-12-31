@@ -11,6 +11,7 @@ import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
 import EmailIcon from "../../../assets/SVGs/email.svg";
 
 import { AuthStackParamList } from "../../navigation/types";
+import { AppReturnKeyType } from "../../types/keyboard";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "ForgotPassword">;
 
@@ -41,7 +42,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
           onChangeText={setEmail}
           placeholder="Enter your email address"
           leftIcon={<EmailIcon />}
-          returnKeyType="done"
+          returnKeyType={AppReturnKeyType.Done}
         />
 
         <Text style={styles.text}>

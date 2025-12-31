@@ -17,6 +17,7 @@ import AppleIcon from "../../../assets/SVGs/apple.svg";
 import FBIcon from "../../../assets/SVGs/fb.svg";
 
 import { AuthStackParamList } from "../../navigation/types";
+import { AppReturnKeyType } from "../../types/keyboard";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "SignUp">;
 
@@ -74,7 +75,7 @@ export default function SignUpScreen({ navigation }: Props) {
           onChangeText={setEmailOrUsername}
           placeholder="Username or Email"
           leftIcon={<UserIcon />}
-          returnKeyType="next"
+          returnKeyType={AppReturnKeyType.Next}
         />
 
         <AppTextInput
@@ -85,7 +86,7 @@ export default function SignUpScreen({ navigation }: Props) {
           leftIcon={<LockIcon />}
           rightIcon={<EyeOpenIcon />}
           onRightIconPress={() => setIsPasswordVisible((v) => !v)}
-          returnKeyType="next"
+          returnKeyType={AppReturnKeyType.Next}
         />
 
         <AppTextInput
@@ -96,7 +97,7 @@ export default function SignUpScreen({ navigation }: Props) {
           leftIcon={<LockIcon />}
           rightIcon={<EyeOpenIcon />}
           onRightIconPress={() => setIsConfirmPasswordVisible((v) => !v)}
-          returnKeyType="done"
+          returnKeyType={AppReturnKeyType.Done}
           onSubmitEditing={handleCreateAccount}
         />
 

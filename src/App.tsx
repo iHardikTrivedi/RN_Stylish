@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import RootNavigator from "./navigation/RootNavigator";
 import { useAppFonts } from "./theme/fonts";
+import KeyboardDismissView from "./components/KeyboardDismissView";
 
 export default function App() {
   const fontsLoaded = useAppFonts();
@@ -10,9 +11,11 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
+      <KeyboardDismissView>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </KeyboardDismissView>
     </SafeAreaProvider>
   );
 }

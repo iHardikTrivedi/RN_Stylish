@@ -14,6 +14,8 @@ import EyeOpenIcon from "../../../assets/SVGs/eye_open.svg";
 
 import { AuthStackParamList, RootStackParamList } from "../../navigation/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AppReturnKeyType } from "../../types/keyboard";
+import { withKeyboardDismiss } from "../../utils/press";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "SignIn">;
 
@@ -55,7 +57,7 @@ export default function SignInScreen({ navigation }: Props) {
           onChangeText={setEmailOrUsername}
           placeholder="Username or Email"
           leftIcon={<UserIcon />}
-          returnKeyType="next"
+          returnKeyType={AppReturnKeyType.Next}
         />
 
         <AppTextInput
@@ -66,7 +68,7 @@ export default function SignInScreen({ navigation }: Props) {
           leftIcon={<LockIcon />}
           rightIcon={<EyeOpenIcon />}
           onRightIconPress={() => setIsPasswordVisible((v) => !v)}
-          returnKeyType="done"
+          returnKeyType={AppReturnKeyType.Done}
           onSubmitEditing={handleLogin}
         />
         <Pressable
@@ -80,7 +82,7 @@ export default function SignInScreen({ navigation }: Props) {
 
         <View style={styles.footerRow}>
           <Text style={styles.footerText}>Create An Account </Text>
-          <Pressable onPress={handleSignUp} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Pressable onPress={withKeyboardDismiss(handleSignUp)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Text style={styles.signUpText}>Sign Up</Text>
           </Pressable>
         </View>
