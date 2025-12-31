@@ -1,0 +1,97 @@
+# ================================
+# Node / JavaScript
+# ================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ================================
+# Metro / React Native
+# ================================
+.metro-health-check*
+.react-native-debugger*
+.expo/
+.expo-shared/
+.expo-env.d.ts
+
+# ================================
+# Build Outputs
+# ================================
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# ================================
+# iOS
+# ================================
+ios/Pods/
+ios/build/
+ios/DerivedData/
+ios/*.xcworkspace
+ios/*.xcodeproj/*.pbxuser
+ios/*.xcodeproj/*.mode1v3
+ios/*.xcodeproj/*.mode2v3
+ios/*.xcodeproj/*.perspectivev3
+ios/*.xcodeproj/project.xcworkspace/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcuserstate
+ios/.DS_Store
+
+# CocoaPods
+Podfile.lock
+
+# ================================
+# Android
+# ================================
+android/.gradle/
+android/.idea/
+android/local.properties
+android/build/
+android/app/build/
+android/app/*.keystore
+android/app/*.jks
+android/*.iml
+android/.DS_Store
+
+# ================================
+# Environment Files
+# ================================
+.env
+.env.*
+!.env.example
+
+# ================================
+# Logs
+# ================================
+logs/
+*.log
+
+# ================================
+# OS / Editor
+# ================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ================================
+# Fastlane
+# ================================
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# ================================
+# Misc
+# ================================
+*.orig
+*.rej
