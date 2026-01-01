@@ -11,8 +11,8 @@ type Props = PressableProps & {
 
 export default function PrimaryButton({ title, onPress, disabled, style, ...rest }: Props) {
   const handlePress: PressableProps["onPress"] = (e) => {
-    Keyboard.dismiss();          // ✅ always dismiss
-    onPress?.(e);                // ✅ then run original action
+    Keyboard.dismiss();
+    onPress?.(e);
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -16,8 +16,9 @@ import { AuthStackParamList, RootStackParamList } from "../../navigation/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AppReturnKeyType } from "../../types/keyboard";
 import { withKeyboardDismiss } from "../../utils/press";
+import { AuthRoutes, RootRoutes } from "../../navigation/routes";
 
-type Props = NativeStackScreenProps<AuthStackParamList, "SignIn">;
+type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.SignIn>;
 
 export default function SignInScreen({ navigation }: Props) {
   const [emailOrUsername, setEmailOrUsername] = useState("");
@@ -25,26 +26,36 @@ export default function SignInScreen({ navigation }: Props) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const goToApp = useCallback(() => {
-    // ✅ jump to ROOT stack from AuthStack
     const parentNav = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
     parentNav?.reset({
       index: 0,
-      routes: [{ name: "App" }],
+      routes: [{ name: RootRoutes.App }],
     });
   }, [navigation]);
 
   const handleLogin = useCallback(async () => {
-    // TODO: real API login
-    await AsyncStorage.setItem("token", "dummy_token");
-    goToApp();
-  }, [goToApp]);
+    const u = emailOrUsername.trim();
+
+    if (!u) return Alert.alert("Validation", "Please enter Username or Email.");
+    if (!password) return Alert.alert("Validation", "Please enter Password.");
+    if (password.length < 6)
+      return Alert.alert("Validation", "Password must be at least 6 characters.");
+
+    try {
+      await AsyncStorage.setItem("token", "dummy_token");
+
+      goToApp();
+    } catch {
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  }, [emailOrUsername, password, goToApp]);
 
   const handleSignUp = useCallback(() => {
-    navigation.navigate("SignUp");
+    navigation.navigate(AuthRoutes.SignUp);
   }, [navigation]);
 
   const handleForgotPassword = useCallback(() => {
-    navigation.navigate("ForgotPassword");
+    navigation.navigate(AuthRoutes.ForgotPassword);
   }, [navigation]);
 
   return (

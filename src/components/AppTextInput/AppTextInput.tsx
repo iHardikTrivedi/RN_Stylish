@@ -8,7 +8,7 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
-  placeholderTextColor: string;
+  placeholderTextColor?: string;
   secureTextEntry?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;

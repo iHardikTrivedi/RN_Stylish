@@ -18,8 +18,9 @@ import styles from "./styles";
 import { introPages } from "./data";
 import IntroPageView from "./IntroPageView";
 import { RootStackParamList } from "../../navigation/types";
+import { RootRoutes } from "../../navigation/routes";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Intro">;
+type Props = NativeStackScreenProps<RootStackParamList, RootRoutes.Intro>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 

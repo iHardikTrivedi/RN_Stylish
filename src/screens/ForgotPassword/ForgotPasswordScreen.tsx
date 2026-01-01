@@ -12,8 +12,9 @@ import EmailIcon from "../../../assets/SVGs/email.svg";
 
 import { AuthStackParamList } from "../../navigation/types";
 import { AppReturnKeyType } from "../../types/keyboard";
+import { AuthRoutes } from "../../navigation/routes";
 
-type Props = NativeStackScreenProps<AuthStackParamList, "ForgotPassword">;
+type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.ForgotPassword>;
 
 export default function ForgotPasswordScreen({ navigation }: Props) {
   const rootNavigation = useNavigation<any>(); // ✅ root navigator context

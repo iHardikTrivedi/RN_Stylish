@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Alert, Platform, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 
 import styles from "./styles";
@@ -16,14 +16,13 @@ import GoogleIcon from "../../../assets/SVGs/google.svg";
 import AppleIcon from "../../../assets/SVGs/apple.svg";
 import FBIcon from "../../../assets/SVGs/fb.svg";
 
-import { AuthStackParamList } from "../../navigation/types";
+import { AuthStackParamList, RootStackParamList } from "../../navigation/types";
 import { AppReturnKeyType } from "../../types/keyboard";
+import { AuthRoutes, RootRoutes } from "../../navigation/routes";
 
-type Props = NativeStackScreenProps<AuthStackParamList, "SignUp">;
+type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.SignUp>;
 
 export default function SignUpScreen({ navigation }: Props) {
-  const rootNavigation = useNavigation<any>(); // ✅ root navigator context
-
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,13 +31,12 @@ export default function SignUpScreen({ navigation }: Props) {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
   const goToApp = useCallback(() => {
-    rootNavigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "App" }],
-      })
-    );
-  }, [rootNavigation]);
+    const parentNav = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
+    parentNav?.reset({
+      index: 0,
+      routes: [{ name: RootRoutes.App }],
+    });
+  }, [navigation]);
 
   const handleCreateAccount = useCallback(async () => {
     const u = emailOrUsername.trim();
@@ -51,10 +49,8 @@ export default function SignUpScreen({ navigation }: Props) {
       return Alert.alert("Validation", "Password and Confirm Password must match.");
 
     try {
-      // TODO: Replace with API signup
       await AsyncStorage.setItem("token", "dummy_token");
 
-      // ✅ reliable root reset
       goToApp();
     } catch {
       Alert.alert("Error", "Something went wrong. Please try again.");

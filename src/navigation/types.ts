@@ -1,16 +1,18 @@
+import { RootRoutes, AuthRoutes, AppRoutes } from "./routes";
+
 export type RootStackParamList = {
-  Splash: undefined;
-  Intro: undefined;
-  Auth: undefined;
-  App: undefined;
+  [RootRoutes.Splash]: undefined;
+  [RootRoutes.Intro]: undefined;
+  [RootRoutes.Auth]: undefined;
+  [RootRoutes.App]: undefined;
 };
 
 export type AuthStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-  ForgotPassword: undefined;
+  [AuthRoutes.SignIn]: undefined;
+  [AuthRoutes.SignUp]: undefined;
+  [AuthRoutes.ForgotPassword]: undefined;
 };
 
 export type AppStackParamList = {
-  Home: undefined;
+  [AppRoutes.Home]: undefined;
 };

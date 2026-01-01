@@ -8,10 +8,11 @@ import StartInfoScreen from "../screens/StartInfo/StartInfoScreen";
 import AuthStack from "./AuthStack";
 import AppStack from "./AppStack";
 import { RootStackParamList } from "./types";
+import { RootRoutes } from "./routes";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-type Props = NativeStackScreenProps<RootStackParamList, "Splash">;
+type Props = NativeStackScreenProps<RootStackParamList, RootRoutes.Splash>;
 
 function BootScreen({ navigation }: Props) {
   useEffect(() => {
@@ -24,14 +25,14 @@ function BootScreen({ navigation }: Props) {
 
         navigation.reset({
           index: 0,
-          routes: [{ name: seenIntro ? "Auth" : "Intro" }],
+          routes: [{ name: seenIntro ? RootRoutes.Auth : RootRoutes.Intro }],
         });
       } catch {
         if (!mounted) return;
 
         navigation.reset({
           index: 0,
-          routes: [{ name: "Intro" }],
+          routes: [{ name: RootRoutes.Intro }],
         });
       }
     }, 1500);
@@ -49,12 +50,12 @@ export default function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {/* ✅ Boot is Splash + redirect */}
-      <Stack.Screen name="Splash" component={BootScreen} />
+      <Stack.Screen name={RootRoutes.Splash} component={BootScreen} />
 
       {/* ✅ Always registered routes */}
-      <Stack.Screen name="Intro" component={StartInfoScreen} />
-      <Stack.Screen name="Auth" component={AuthStack} />
-      <Stack.Screen name="App" component={AppStack} />
+      <Stack.Screen name={RootRoutes.Intro} component={StartInfoScreen} />
+      <Stack.Screen name={RootRoutes.Auth} component={AuthStack} />
+      <Stack.Screen name={RootRoutes.App} component={AppStack} />
     </Stack.Navigator>
   );
 }
