@@ -16,4 +16,5 @@ export enum AuthRoutes {
 // App stack routes
 export enum AppRoutes {
   Home = "Home",
+  Tab = "Tab",
 }

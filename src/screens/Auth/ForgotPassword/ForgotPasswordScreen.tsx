@@ -1,18 +1,18 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Alert, Platform, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
 import styles from "./styles";
-import AppTextInput from "../../components/AppTextInput/AppTextInput";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
+import AppTextInput from "../../../components/AppTextInput/AppTextInput";
+import PrimaryButton from "../../../components/PrimaryButton/PrimaryButton";
 
-import EmailIcon from "../../../assets/SVGs/email.svg";
+import EmailIcon from "../../../../assets/SVGs/email.svg";
 
-import { AuthStackParamList } from "../../navigation/types";
-import { AppReturnKeyType } from "../../types/keyboard";
-import { AuthRoutes } from "../../navigation/routes";
+import { AuthStackParamList } from "../../../navigation/types";
+import { AppReturnKeyType } from "../../../types/keyboard";
+import { AuthRoutes } from "../../../navigation/routes";
 
 type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.ForgotPassword>;
 

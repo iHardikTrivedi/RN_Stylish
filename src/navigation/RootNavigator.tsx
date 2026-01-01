@@ -1,61 +1,63 @@
-import React, { useEffect } from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import SplashScreen from "../screens/Splash/SplashScreen";
 import StartInfoScreen from "../screens/StartInfo/StartInfoScreen";
 import AuthStack from "./AuthStack";
 import AppStack from "./AppStack";
-import { RootStackParamList } from "./types";
-import { RootRoutes } from "./routes";
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { loadToken } from "../store/authActions";
 
-type Props = NativeStackScreenProps<RootStackParamList, RootRoutes.Splash>;
+export default function RootNavigator() {
+  const dispatch = useAppDispatch();
+  const token = useAppSelector((s) => s.auth.token);
 
-function BootScreen({ navigation }: Props) {
+  const [booting, setBooting] = useState(true);
+  const [seenIntro, setSeenIntro] = useState<boolean | null>(null);
+
   useEffect(() => {
     let mounted = true;
 
-    const timer = setTimeout(async () => {
+    (async () => {
       try {
-        const seenIntro = await AsyncStorage.getItem("hasSeenIntro");
+        // optional delay to show splash nicely
+        await new Promise((r) => setTimeout(r, 800));
+
+        const introValue = await AsyncStorage.getItem("hasSeenIntro");
         if (!mounted) return;
 
-        navigation.reset({
-          index: 0,
-          routes: [{ name: seenIntro ? RootRoutes.Auth : RootRoutes.Intro }],
-        });
-      } catch {
-        if (!mounted) return;
+        setSeenIntro(!!introValue);
 
-        navigation.reset({
-          index: 0,
-          routes: [{ name: RootRoutes.Intro }],
-        });
+        // load token from AsyncStorage into redux
+        await dispatch(loadToken());
+      } finally {
+        if (mounted) setBooting(false);
       }
-    }, 1500);
+    })();
 
     return () => {
       mounted = false;
-      clearTimeout(timer);
     };
-  }, [navigation]);
+  }, [dispatch]);
 
-  return <SplashScreen />;
-}
+  // 1) Splash while booting
+  if (booting || seenIntro === null) {
+    return <SplashScreen />;
+  }
 
-export default function RootNavigator() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* ✅ Boot is Splash + redirect */}
-      <Stack.Screen name={RootRoutes.Splash} component={BootScreen} />
+  // 2) Intro (only once)
+  if (!seenIntro) {
+    return (
+      <StartInfoScreen
+        onFinish={async () => {
+          await AsyncStorage.setItem("hasSeenIntro", "1");
+          setSeenIntro(true);
+        }}
+      />
+    );
+  }
 
-      {/* ✅ Always registered routes */}
-      <Stack.Screen name={RootRoutes.Intro} component={StartInfoScreen} />
-      <Stack.Screen name={RootRoutes.Auth} component={AuthStack} />
-      <Stack.Screen name={RootRoutes.App} component={AppStack} />
-    </Stack.Navigator>
-  );
+  // 3) Auth vs App based on token (AUTO redirects on login/logout)
+  return token ? <AppStack /> : <AuthStack />;
 }

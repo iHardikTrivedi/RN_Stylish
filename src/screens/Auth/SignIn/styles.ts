@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { FontFamily } from "../../theme/typography";
+import { FontFamily } from "../../../theme/typography";
 
 const styles = StyleSheet.create({
   safe: {
@@ -17,6 +17,17 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.semiBold,
     color: "#000",
     marginBottom: 24,
+  },
+
+  forgotView: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  forgotButton: {
+    fontSize: 12,
+    fontFamily: FontFamily.regular,
+    color: "#F83758",
   },
 
   eyeButton: {
@@ -39,7 +50,7 @@ const styles = StyleSheet.create({
   },
 
   primaryButton: {
-    marginTop: 32,
+    marginTop: 42,
   },
 
   dividerWrap: {
@@ -80,18 +91,6 @@ const styles = StyleSheet.create({
     color: "#F83758",
     fontFamily: FontFamily.semiBold,
     textDecorationLine: "underline",
-  },
-
-  text: {
-    fontSize: 12,
-    fontFamily: FontFamily.regular,
-    color: "#676767", // grey text
-    marginTop: 16,
-  },
-  highlight: {
-    fontSize: 12,
-    fontFamily: FontFamily.regular,
-    color: "#FF4B26", // red color
   },
 });
 

@@ -15,4 +15,5 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
   [AppRoutes.Home]: undefined;
+  [AppRoutes.Tab]: undefined;
 };

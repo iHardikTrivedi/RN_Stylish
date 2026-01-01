@@ -12,19 +12,18 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import styles from "./styles";
 import { introPages } from "./data";
 import IntroPageView from "./IntroPageView";
-import { RootStackParamList } from "../../navigation/types";
-import { RootRoutes } from "../../navigation/routes";
-
-type Props = NativeStackScreenProps<RootStackParamList, RootRoutes.Intro>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-export default function StartInfoScreen({ navigation }: Props) {
+type Props = {
+  onFinish: () => void;
+};
+
+export default function StartInfoScreen({ onFinish }: Props) {
   const listRef = useRef<FlatList>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -76,20 +75,14 @@ export default function StartInfoScreen({ navigation }: Props) {
 
     try {
       await AsyncStorage.setItem("hasSeenIntro", "1");
-
-      // ✅ safest navigation: hard reset to Auth (no back to Intro)
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Auth" }],
-      });
+      onFinish(); // ✅ RootNavigator will switch to Auth/App
     } catch (e) {
       setFinishing(false);
     }
-  }, [finishing, navigation]);
+  }, [finishing, onFinish]);
 
   const goTo = useCallback((index: number) => {
     listRef.current?.scrollToIndex({ index, animated: true });
-    // setCurrentIndex will be updated reliably in onMomentumScrollEnd
   }, []);
 
   const onPrev = useCallback(() => {
@@ -157,7 +150,11 @@ export default function StartInfoScreen({ navigation }: Props) {
       <View style={styles.bottomBar}>
         {/* Left */}
         <View style={styles.bottomSide}>
-          <Pressable onPress={onPrev} disabled={currentIndex === 0} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Pressable
+            onPress={onPrev}
+            disabled={currentIndex === 0}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
             <Animated.Text style={[styles.bottomText, { opacity: prevOpacity }]}>
               Prev
             </Animated.Text>

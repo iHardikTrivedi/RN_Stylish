@@ -1,28 +1,32 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Platform, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { CommonActions, useNavigation } from "@react-navigation/native";
 
 import styles from "./styles";
-import AppTextInput from "../../components/AppTextInput/AppTextInput";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
+import AppTextInput from "../../../components/AppTextInput/AppTextInput";
+import PrimaryButton from "../../../components/PrimaryButton/PrimaryButton";
 
-import UserIcon from "../../../assets/SVGs/user.svg";
-import LockIcon from "../../../assets/SVGs/lock.svg";
-import EyeOpenIcon from "../../../assets/SVGs/eye_open.svg";
-import GoogleIcon from "../../../assets/SVGs/google.svg";
-import AppleIcon from "../../../assets/SVGs/apple.svg";
-import FBIcon from "../../../assets/SVGs/fb.svg";
+import UserIcon from "../../../../assets/SVGs/user.svg";
+import LockIcon from "../../../../assets/SVGs/lock.svg";
+import EyeOpenIcon from "../../../../assets/SVGs/eye_open.svg";
+import GoogleIcon from "../../../../assets/SVGs/google.svg";
+import AppleIcon from "../../../../assets/SVGs/apple.svg";
+import FBIcon from "../../../../assets/SVGs/fb.svg";
 
-import { AuthStackParamList, RootStackParamList } from "../../navigation/types";
-import { AppReturnKeyType } from "../../types/keyboard";
-import { AuthRoutes, RootRoutes } from "../../navigation/routes";
+import { AuthStackParamList, RootStackParamList } from "../../../navigation/types";
+import { AppReturnKeyType } from "../../../types/keyboard";
+import { AuthRoutes, RootRoutes } from "../../../navigation/routes";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { authError } from "../../../store/authSlice";
+import { signup } from "../../../store/authActions";
 
 type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.SignUp>;
 
 export default function SignUpScreen({ navigation }: Props) {
+  const dispatch = useAppDispatch();
+  const { isLoading, error } = useAppSelector((s) => s.auth);
+
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,13 +34,9 @@ export default function SignUpScreen({ navigation }: Props) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
-  const goToApp = useCallback(() => {
-    const parentNav = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
-    parentNav?.reset({
-      index: 0,
-      routes: [{ name: RootRoutes.App }],
-    });
-  }, [navigation]);
+  useEffect(() => {
+    if (error) Alert.alert("Error", error);
+  }, [error]);
 
   const handleCreateAccount = useCallback(async () => {
     const u = emailOrUsername.trim();
@@ -48,14 +48,9 @@ export default function SignUpScreen({ navigation }: Props) {
     if (password !== confirmPassword)
       return Alert.alert("Validation", "Password and Confirm Password must match.");
 
-    try {
-      await AsyncStorage.setItem("token", "dummy_token");
-
-      goToApp();
-    } catch {
-      Alert.alert("Error", "Something went wrong. Please try again.");
-    }
-  }, [emailOrUsername, password, confirmPassword, goToApp]);
+    dispatch(authError(""));
+    dispatch(signup(u, password));
+  }, [emailOrUsername, password, confirmPassword, dispatch]);
 
   const goToLogin = useCallback(() => {
     navigation.goBack();
@@ -104,9 +99,10 @@ export default function SignUpScreen({ navigation }: Props) {
         </Text>
 
         <PrimaryButton
-          title="Create Account"
+          title={isLoading ? "Creating..." : "Create Account"}
           onPress={handleCreateAccount}
           style={styles.primaryButton}
+          disabled={isLoading}
         />
 
         <View style={styles.dividerWrap}>

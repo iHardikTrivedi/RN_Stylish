@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { FontFamily } from "../../theme/typography";
+import { FontFamily } from "../../../theme/typography";
 
 const styles = StyleSheet.create({
   safe: {
