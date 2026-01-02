@@ -11,25 +11,24 @@ import {
 /**
  * LOGIN
  */
-export const login =
-  (emailOrUserName: string, password: string) =>
-    async (dispatch: AppDispatch) => {
-      dispatch(authStart());
+export const login = (emailOrUserName: string, password: string) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(authStart());
 
-      try {
-        // ✅ Replace with real API later
-        if (!emailOrUserName || password.length < 6) {
-          throw new Error("Invalid credentials");
-        }
-
-        const token = "dummy_token";
-        await AsyncStorage.setItem("token", token);
-
-        dispatch(authSuccess(token));
-      } catch (e: any) {
-        dispatch(authError(e?.message ?? "Login failed"));
+    try {
+      // ✅ Replace with real API later
+      if (!emailOrUserName || password.length < 6) {
+        throw new Error("Invalid credentials");
       }
-    };
+
+      const token = "dummy_token";
+      await AsyncStorage.setItem("token", token);
+
+      dispatch(authSuccess(token));
+    } catch (e: any) {
+      dispatch(authError(e?.message ?? "Login failed"));
+    }
+  };
 
 /**
  * SIGNUP
@@ -61,6 +60,7 @@ export const loadToken = () => async (dispatch: AppDispatch) => {
  * LOGOUT
  */
 export const logoutUser = () => async (dispatch: AppDispatch) => {
+  await AsyncStorage.setItem("showIntroAfterLogout", "1");
   await AsyncStorage.removeItem("token");
   dispatch(logout());
 };
