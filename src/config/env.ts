@@ -1,17 +1,30 @@
-export type AppEnv = "DEV" | "QA" | "PROD";
+export type AppEnvName = "DEV" | "QA" | "PROD";
 
-const ENV: AppEnv =
-  (process.env.EXPO_PUBLIC_ENV as AppEnv) ?? "DEV";
-
-const BASE_URLS: Record<AppEnv, string> = {
-  DEV: "https://reqres.in/api",
-  QA: "https://qa.api.yourapp.com",
-  PROD: "https://api.yourapp.com",
+type EnvConfig = {
+  name: AppEnvName;
+  baseURL: string;
+  timeoutMs: number;
 };
 
-export const Env = {
-  name: ENV,
-  baseUrl: BASE_URLS[ENV],
-  timeoutMs: Number(process.env.EXPO_PUBLIC_API_TIMEOUT_MS ?? 20000),
-  enableLogs: ENV !== "PROD",
+const ENVS: Record<AppEnvName, EnvConfig> = {
+  DEV: {
+    name: "DEV",
+    baseURL: "https://reqres.in/api",
+    timeoutMs: 20000,
+  },
+  QA: {
+    name: "QA",
+    baseURL: "https://reqres.in/api",
+    timeoutMs: 20000,
+  },
+  PROD: {
+    name: "PROD",
+    baseURL: "https://reqres.in/api",
+    timeoutMs: 20000,
+  },
 };
+
+// Simple runtime env switch
+const CURRENT: AppEnvName = "DEV";
+
+export const Env = ENVS[CURRENT];

@@ -4,7 +4,7 @@ export const Endpoints = {
     register: () => "/register",
   },
   users: {
-    list: (page: number) => `/users?page=${page}`,
-    detail: (id: number) => `/users/${id}`,
+    // list: (page: number) => `/users?page=${page}`,
+    // detail: (id: number) => `/users/${id}`,
   },
 } as const;

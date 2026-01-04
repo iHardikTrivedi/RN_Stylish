@@ -7,6 +7,7 @@ import {
   setToken,
   logout,
 } from "./authSlice";
+import { tokenProvider } from "../network/tokenProvider";
 
 /**
  * LOGIN
@@ -22,7 +23,7 @@ export const login = (emailOrUserName: string, password: string) =>
       }
 
       const token = "dummy_token";
-      await AsyncStorage.setItem("token", token);
+      await tokenProvider.setToken(token);
 
       dispatch(authSuccess(token));
     } catch (e: any) {
@@ -40,7 +41,7 @@ export const signup =
 
       try {
         const token = "dummy_token";
-        await AsyncStorage.setItem("token", token);
+        await tokenProvider.setToken(token);
 
         dispatch(authSuccess(token));
       } catch (e: any) {
@@ -61,6 +62,6 @@ export const loadToken = () => async (dispatch: AppDispatch) => {
  */
 export const logoutUser = () => async (dispatch: AppDispatch) => {
   await AsyncStorage.setItem("showIntroAfterLogout", "1");
-  await AsyncStorage.removeItem("token");
+  await tokenProvider.clearToken();
   dispatch(logout());
 };

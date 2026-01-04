@@ -20,6 +20,7 @@ import { AuthRoutes, RootRoutes } from "../../../navigation/routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { authError } from "../../../store/authSlice";
 import { signup } from "../../../store/authActions";
+import { checkInternet } from "../../../utils/network";
 
 type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.SignUp>;
 
@@ -47,6 +48,11 @@ export default function SignUpScreen({ navigation }: Props) {
       return Alert.alert("Validation", "Password must be at least 6 characters.");
     if (password !== confirmPassword)
       return Alert.alert("Validation", "Password and Confirm Password must match.");
+
+    const hasInternet = await checkInternet();
+    if (!hasInternet) {
+      return Alert.alert("No Internet", "Please check your internet connection and try again.");
+    }
 
     dispatch(authError(""));
     dispatch(signup(u, password));

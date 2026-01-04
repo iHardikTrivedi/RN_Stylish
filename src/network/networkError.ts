@@ -1,56 +1,51 @@
-export type NetworkErrorKind =
-  | "Timeout"
-  | "NoInternet"
-  | "Cancelled"
-  | "HttpError"
-  | "DecodeError"
-  | "Unknown";
+import type { AxiosError } from "axios";
 
-export class NetworkError extends Error {
-  kind: NetworkErrorKind;
+export type NetworkErrorType =
+  | "CANCELLED"
+  | "TIMEOUT"
+  | "NO_INTERNET"
+  | "HTTP_ERROR"
+  | "DECODE_ERROR"
+  | "UNKNOWN";
+
+export type NetworkError = {
+  type: NetworkErrorType;
+  message: string;
   status?: number;
-  url?: string;
-  payload?: unknown;
+  details?: any;
+};
 
-  constructor(
-    message: string,
-    kind: NetworkErrorKind = "Unknown",
-    opts?: { status?: number; url?: string; payload?: unknown }
-  ) {
-    super(message);
-    this.name = "NetworkError";
-    this.kind = kind;
-    this.status = opts?.status;
-    this.url = opts?.url;
-    this.payload = opts?.payload;
-  }
-}
+export const toNetworkError = (e: unknown): NetworkError => {
+  // Axios
+  const ax = e as AxiosError<any>;
 
-export const toNetworkError = (err: any, url?: string): NetworkError => {
-  // Axios cancel
-  if (err?.code === "ERR_CANCELED") {
-    return new NetworkError("Request cancelled", "Cancelled", { url });
-  }
+  if (ax?.isAxiosError) {
+    const status = ax.response?.status;
 
-  // Axios timeout
-  if (err?.code === "ECONNABORTED" || /timeout/i.test(err?.message ?? "")) {
-    return new NetworkError("Request timeout", "Timeout", { url });
-  }
+    // Axios timeout uses code = 'ECONNABORTED'
+    if (ax.code === "ECONNABORTED") {
+      return { type: "TIMEOUT", message: "Request timeout", status, details: ax.response?.data };
+    }
 
-  // HTTP error
-  const status = err?.response?.status;
-  if (typeof status === "number") {
-    return new NetworkError(`HTTP ${status}`, "HttpError", {
+    // Cancelled request
+    if (ax.code === "ERR_CANCELED") {
+      return { type: "CANCELLED", message: "Request cancelled", status };
+    }
+
+    // Network error (no response)
+    if (!ax.response) {
+      return { type: "NO_INTERNET", message: ax.message || "Network error" };
+    }
+
+    return {
+      type: "HTTP_ERROR",
+      message: ax.message || "HTTP error",
       status,
-      url,
-      payload: err?.response?.data,
-    });
+      details: ax.response?.data,
+    };
   }
 
-  // Network offline often appears as "Network Error" in axios
-  if (/network error/i.test(err?.message ?? "")) {
-    return new NetworkError("No internet connection", "NoInternet", { url });
-  }
-
-  return new NetworkError(err?.message ?? "Unknown error", "Unknown", { url });
+  // Non-axios
+  const msg = e instanceof Error ? e.message : "Unknown error";
+  return { type: "UNKNOWN", message: msg, details: e };
 };

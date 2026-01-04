@@ -18,6 +18,7 @@ import { AuthRoutes } from "../../../navigation/routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { authError } from "../../../store/authSlice";
 import { login } from "../../../store/authActions";
+import { checkInternet } from "../../../utils/network";
 
 type Props = NativeStackScreenProps<AuthStackParamList, AuthRoutes.SignIn>;
 
@@ -33,13 +34,18 @@ export default function SignInScreen({ navigation }: Props) {
     if (error) Alert.alert("Error", error);
   }, [error]);
 
-  const handleLogin = useCallback(() => {
+  const handleLogin = useCallback(async () => {
     const u = emailOrUsername.trim();
 
     if (!u) return Alert.alert("Validation", "Please enter Username or Email.");
     if (!password) return Alert.alert("Validation", "Please enter Password.");
     if (password.length < 6)
       return Alert.alert("Validation", "Password must be at least 6 characters.");
+
+    const hasInternet = await checkInternet();
+    if (!hasInternet) {
+      return Alert.alert("No Internet", "Please check your internet connection and try again.");
+    }
 
     dispatch(authError(""));
     dispatch(login(u, password));
