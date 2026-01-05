@@ -18,7 +18,8 @@ export const tokenProvider = {
     }
   },
 
-  async setToken(token: string): Promise<void> {
+  async setToken(token: string | null): Promise<void> {
+    if (!token) return;
     await AsyncStorage.setItem(TOKEN_KEY, token);
   },
 

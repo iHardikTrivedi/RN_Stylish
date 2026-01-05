@@ -8,58 +8,40 @@ import {
   logout,
 } from "./authSlice";
 import { tokenProvider } from "../network/tokenProvider";
+import { NetworkError } from "../network/networkError";
+import { AuthApi } from "../api/auth/auth.api";
+import { LoginInput } from "../api/auth/auth.types";
 
-/**
- * LOGIN
- */
-export const login = (emailOrUserName: string, password: string) =>
-  async (dispatch: AppDispatch) => {
+const getErrorMessage = (e: unknown) => {
+  const ne = e as NetworkError;
+  if (typeof ne?.details === "object") return ne.details?.message || ne.details?.error || ne.message;
+  return ne?.message || "Something went wrong";
+};
+
+export const login =
+  (body: LoginInput) => async (dispatch: AppDispatch) => {
     dispatch(authStart());
-
     try {
-      // ✅ Replace with real API later
-      if (!emailOrUserName || password.length < 6) {
-        throw new Error("Invalid credentials");
-      }
-
-      const token = "dummy_token";
-      await tokenProvider.setToken(token);
-
-      dispatch(authSuccess(token));
-    } catch (e: any) {
-      dispatch(authError(e?.message ?? "Login failed"));
+      const res = await AuthApi.login(body);
+      await tokenProvider.setToken(res.data.token);
+      dispatch(authSuccess(res.data.token));
+    } catch (e) {
+      dispatch(authError(getErrorMessage(e) || "Login failed"));
     }
   };
 
-/**
- * SIGNUP
- */
 export const signup =
-  (emailOrUserName: string, password: string) =>
-    async (dispatch: AppDispatch) => {
-      dispatch(authStart());
+  (emailOrUserName: string, password: string) => async (dispatch: AppDispatch) => {
+    dispatch(authStart());
+    try {
+      const res = await AuthApi.register({ email: emailOrUserName, password });
+      await tokenProvider.setToken(res.token);
+      dispatch(authSuccess(res.token));
+    } catch (e) {
+      dispatch(authError(getErrorMessage(e) || "Signup failed"));
+    }
+  };
 
-      try {
-        const token = "dummy_token";
-        await tokenProvider.setToken(token);
-
-        dispatch(authSuccess(token));
-      } catch (e: any) {
-        dispatch(authError(e?.message ?? "Signup failed"));
-      }
-    };
-
-/**
- * LOAD TOKEN ON APP START
- */
-export const loadToken = () => async (dispatch: AppDispatch) => {
-  const token = await AsyncStorage.getItem("token");
-  dispatch(setToken(token));
-};
-
-/**
- * LOGOUT
- */
 export const logoutUser = () => async (dispatch: AppDispatch) => {
   await AsyncStorage.setItem("showIntroAfterLogout", "1");
   await tokenProvider.clearToken();

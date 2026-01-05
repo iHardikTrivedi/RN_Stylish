@@ -1,4 +1,4 @@
-export type AppEnvName = "DEV" | "QA" | "PROD";
+export type AppEnvName = "DEV" | "SIT" | "UAT" | "PROD";
 
 type EnvConfig = {
   name: AppEnvName;
@@ -9,22 +9,25 @@ type EnvConfig = {
 const ENVS: Record<AppEnvName, EnvConfig> = {
   DEV: {
     name: "DEV",
-    baseURL: "https://reqres.in/api",
+    baseURL: "https://dev.demo.xyz/api",
     timeoutMs: 20000,
   },
-  QA: {
-    name: "QA",
-    baseURL: "https://reqres.in/api",
+  SIT: {
+    name: "SIT",
+    baseURL: "http://sit.demo.xyz/api",
+    timeoutMs: 20000,
+  },
+  UAT: {
+    name: "UAT",
+    baseURL: "https://uat.demo.xyz/api",
     timeoutMs: 20000,
   },
   PROD: {
     name: "PROD",
-    baseURL: "https://reqres.in/api",
+    baseURL: "https://demo.xyz/api",
     timeoutMs: 20000,
   },
 };
 
-// Simple runtime env switch
 const CURRENT: AppEnvName = "DEV";
-
 export const Env = ENVS[CURRENT];

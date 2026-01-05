@@ -48,7 +48,7 @@ export default function SignInScreen({ navigation }: Props) {
     }
 
     dispatch(authError(""));
-    dispatch(login(u, password));
+    dispatch(login({ phone_no: u, password }));
   }, [emailOrUsername, password, dispatch]);
 
   const handleSignUp = useCallback(() => {

@@ -1,7 +1,8 @@
 export const Endpoints = {
   auth: {
-    login: () => "/login",
-    register: () => "/register",
+    login: () => "/auth/login",
+    register: () => "/auth/register",
+    forgotPassword: () => "/auth/reset-password",
   },
   users: {
     // list: (page: number) => `/users?page=${page}`,
