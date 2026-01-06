@@ -5,9 +5,8 @@ import SplashScreen from "../screens/Splash/SplashScreen";
 import StartInfoScreen from "../screens/StartInfo/StartInfoScreen";
 import AuthStack from "./AuthStack";
 import AppStack from "./AppStack";
-
-import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { loadToken } from "../store/authActions";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 const KEYS = {
   hasSeenIntro: "hasSeenIntro",

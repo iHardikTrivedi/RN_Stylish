@@ -8,7 +8,7 @@ import { ApiLogger } from "./APILog/apiLogger";
 
 ApiLogger.setConfig({
   enabled: __DEV__, // turn OFF in prod
-  level: "debug",
+  level: __DEV__ ? "warn" : "error", // ✅ avoid RN RedBox from console.error
   prettyJson: true,
 });
 
@@ -39,14 +39,24 @@ export async function apiRequest<TResponse, TBody = unknown>(
 
     return res.data;
   } catch (e) {
+    // ✅ Make sure toNetworkError preserves server message (422) in its `.message`
     throw toNetworkError(e);
   }
 }
 
 export const ApiClient = {
-  get: <T>(url: string, cfg?: ApiRequestConfig) => apiRequest<T>(url, "GET", undefined, cfg),
-  post: <T, B>(url: string, body: B, cfg?: ApiRequestConfig) => apiRequest<T, B>(url, "POST", body, cfg),
-  put: <T, B>(url: string, body: B, cfg?: ApiRequestConfig) => apiRequest<T, B>(url, "PUT", body, cfg),
-  patch: <T, B>(url: string, body: B, cfg?: ApiRequestConfig) => apiRequest<T, B>(url, "PATCH", body, cfg),
-  delete: <T>(url: string, cfg?: ApiRequestConfig) => apiRequest<T>(url, "DELETE", undefined, cfg),
+  get: <T>(url: string, cfg?: ApiRequestConfig) =>
+    apiRequest<T>(url, "GET", undefined, cfg),
+
+  post: <T, B>(url: string, body: B, cfg?: ApiRequestConfig) =>
+    apiRequest<T, B>(url, "POST", body, cfg),
+
+  put: <T, B>(url: string, body: B, cfg?: ApiRequestConfig) =>
+    apiRequest<T, B>(url, "PUT", body, cfg),
+
+  patch: <T, B>(url: string, body: B, cfg?: ApiRequestConfig) =>
+    apiRequest<T, B>(url, "PATCH", body, cfg),
+
+  delete: <T>(url: string, cfg?: ApiRequestConfig) =>
+    apiRequest<T>(url, "DELETE", undefined, cfg),
 };

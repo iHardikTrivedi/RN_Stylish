@@ -9,7 +9,7 @@ type EnvConfig = {
 const ENVS: Record<AppEnvName, EnvConfig> = {
   DEV: {
     name: "DEV",
-    baseURL: "https://dev.demo.xyz/api",
+    baseURL: "https://dev.demo.xyz/api/",
     timeoutMs: 20000,
   },
   SIT: {

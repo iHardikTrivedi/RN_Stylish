@@ -31,8 +31,12 @@ export default function SignInScreen({ navigation }: Props) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
-    if (error) Alert.alert("Error", error);
-  }, [error]);
+    if (!error) return;
+
+    Alert.alert("Error", error, [
+      { text: "OK", onPress: () => dispatch(authError("")) },
+    ]);
+  }, [error, dispatch]);
 
   const handleLogin = useCallback(async () => {
     const u = emailOrUsername.trim();

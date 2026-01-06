@@ -1,51 +1,40 @@
-import type { AxiosError } from "axios";
+import axios from "axios";
 
-export type NetworkErrorType =
-  | "CANCELLED"
-  | "TIMEOUT"
-  | "NO_INTERNET"
-  | "HTTP_ERROR"
-  | "DECODE_ERROR"
-  | "UNKNOWN";
-
-export type NetworkError = {
-  type: NetworkErrorType;
-  message: string;
+export type NetworkError = Error & {
+  kind: "NetworkError";
   status?: number;
-  details?: any;
+  data?: any;
 };
 
-export const toNetworkError = (e: unknown): NetworkError => {
-  // Axios
-  const ax = e as AxiosError<any>;
+export function isNetworkError(e: unknown): e is NetworkError {
+  return typeof e === "object" && e !== null && (e as any).kind === "NetworkError";
+}
 
-  if (ax?.isAxiosError) {
-    const status = ax.response?.status;
+export function toNetworkError(err: unknown): NetworkError {
+  // Default
+  const out = new Error("Something went wrong") as NetworkError;
+  out.kind = "NetworkError";
 
-    // Axios timeout uses code = 'ECONNABORTED'
-    if (ax.code === "ECONNABORTED") {
-      return { type: "TIMEOUT", message: "Request timeout", status, details: ax.response?.data };
-    }
+  if (axios.isAxiosError(err)) {
+    out.status = err.response?.status;
+    out.data = err.response?.data;
 
-    // Cancelled request
-    if (ax.code === "ERR_CANCELED") {
-      return { type: "CANCELLED", message: "Request cancelled", status };
-    }
+    const d: any = err.response?.data;
 
-    // Network error (no response)
-    if (!ax.response) {
-      return { type: "NO_INTERNET", message: ax.message || "Network error" };
-    }
+    // ✅ your backend message paths
+    const serverMsg =
+      d?.response?.message?.description ||
+      d?.response?.message?.title ||
+      d?.message?.description ||
+      d?.message?.title;
 
-    return {
-      type: "HTTP_ERROR",
-      message: ax.message || "HTTP error",
-      status,
-      details: ax.response?.data,
-    };
+    out.message = serverMsg || err.message || "Request failed";
+    return out;
   }
 
-  // Non-axios
-  const msg = e instanceof Error ? e.message : "Unknown error";
-  return { type: "UNKNOWN", message: msg, details: e };
-};
+  if (err instanceof Error) {
+    out.message = err.message;
+  }
+
+  return out;
+}

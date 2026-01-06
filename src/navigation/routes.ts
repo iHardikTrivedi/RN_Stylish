@@ -18,3 +18,12 @@ export enum AppRoutes {
   Home = "Home",
   Tab = "Tab",
 }
+
+export enum TabRoutes {
+  Home = "Home",
+  Wishlist = "Wishlist",
+  Cart = "Cart",
+  Search = "Search",
+  Setting = "Setting",
+}
+

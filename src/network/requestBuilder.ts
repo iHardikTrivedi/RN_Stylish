@@ -8,7 +8,7 @@ export const buildHeaders = async (cfg?: ApiRequestConfig) => {
   };
 
   if (cfg?.withAuth) {
-    const token = await tokenProvider.getToken();
+    const token = tokenProvider.getTokenSync();
     if (token) headers.Authorization = `Bearer ${token}`;
   }
   return headers;

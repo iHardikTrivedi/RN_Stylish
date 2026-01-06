@@ -4,29 +4,79 @@ import {
   authStart,
   authSuccess,
   authError,
-  setToken,
   logout,
 } from "./authSlice";
 import { tokenProvider } from "../network/tokenProvider";
-import { NetworkError } from "../network/networkError";
+import { isNetworkError, NetworkError } from "../network/networkError";
 import { AuthApi } from "../api/auth/auth.api";
 import { LoginInput } from "../api/auth/auth.types";
 
-const getErrorMessage = (e: unknown) => {
-  const ne = e as NetworkError;
-  if (typeof ne?.details === "object") return ne.details?.message || ne.details?.error || ne.message;
-  return ne?.message || "Something went wrong";
+import axios from "axios";
+
+export const getErrorMessage = (e: unknown): string => {
+  // 1️⃣ NetworkError created by toNetworkError
+  if (typeof e === "object" && e !== null && "details" in e) {
+    const ne = e as NetworkError;
+    const d: any = ne.details;
+
+    return (
+      d?.response?.message?.description ||
+      d?.response?.message?.title ||
+      d?.message?.description ||
+      d?.message?.title ||
+      ne.message ||
+      "Something went wrong"
+    );
+  }
+
+  // 2️⃣ Raw AxiosError (fallback safety)
+  if (axios.isAxiosError(e)) {
+    const d: any = e.response?.data;
+    return (
+      d?.response?.message?.description ||
+      d?.response?.message?.title ||
+      e.message ||
+      "Request failed"
+    );
+  }
+
+  // 3️⃣ Normal Error
+  if (e instanceof Error) return e.message;
+
+  return "Something went wrong";
+};
+
+export const loadToken = () => async (dispatch: AppDispatch) => {
+  dispatch(authStart());
+
+  try {
+    const token = await tokenProvider.loadToken();
+    if (token) dispatch(authSuccess(token));
+    else dispatch(logout());
+  } catch {
+    dispatch(logout());
+  }
 };
 
 export const login =
   (body: LoginInput) => async (dispatch: AppDispatch) => {
     dispatch(authStart());
+
     try {
       const res = await AuthApi.login(body);
-      await tokenProvider.setToken(res.data.token);
-      dispatch(authSuccess(res.data.token));
+
+      if (!res.data?.status) {
+        dispatch(authError(res.data?.message?.description || "Login failed"));
+        return;
+      }
+
+      const token = res.data.data.token;
+      await tokenProvider.setToken(token);
+      dispatch(authSuccess(token));
     } catch (e) {
-      dispatch(authError(getErrorMessage(e) || "Login failed"));
+      // ✅ NetworkError message already contains server message now
+      const msg = isNetworkError(e) ? e.message : (e as any)?.message || "Login failed";
+      dispatch(authError(msg));
     }
   };
 
